@@ -10,6 +10,11 @@ void generateDescriptor(const Mat& in, const vector<KeyPoint> keyPoint, vector<D
 	vector<KeyPoint> keyPointRotation;
 	kPRotation(grayImg, keyPoint, keyPointRotation);
 
+	Mat out;
+	drawKeypoints(in, keyPointRotation, out, -1, DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+	imshow("", out);
+	waitKey();
+
 	extractDescriptor(grayImg, keyPointRotation, keyPointDescriptor);
 
 }
@@ -37,7 +42,7 @@ void extractDescriptor(const Mat& in, const vector<KeyPoint>& keyPointRotation, 
 				float diffI = window.at<float>(i + 1, j) - window.at<float>(i - 1, j);
 				float diffJ = window.at<float>(i, j + 1) - window.at<float>(i, j - 1);
 				float m = sqrt(pow(diffI, 2.0) + pow(diffJ, 2.0));
-				M.at<float>(i - 1, j - 1) = m *gKernel.at<float>(i - 1, j - 1);
+				M.at<float>(i - 1, j - 1) = m;// *gKernel.at<float>(i - 1, j - 1);
 				float theta = atan2(diffI, diffJ) * 180 / M_PI;
 				if (theta < 0) theta += 360;
 
@@ -104,7 +109,7 @@ void kPRotation(const Mat& in, const vector<KeyPoint>& vKeyPoint, vector<KeyPoin
 		Mat window = Mat(in, patch);
 		Mat gWindow;
 		gWindow = window;
-		GaussianBlur(window, gWindow, kSize, sigma);
+		//GaussianBlur(window, gWindow, kSize, 0,0);
 		
 		vector<float> bin(36, 0);
 
@@ -120,12 +125,10 @@ void kPRotation(const Mat& in, const vector<KeyPoint>& vKeyPoint, vector<KeyPoin
 			}
 		}
 
-		normalize(bin, bin, 0, 100, NORM_MINMAX);
-
-		//float max = *max_element(begin(bin), end(bin));
+		float max = *max_element(begin(bin), end(bin));
 		for (int i = 0; i <nBin; ++i) {
-			//bin[i] /= max;
-			if (bin[i] >80) {
+			bin[i] /= max;
+			if (bin[i] >0.8) {
 				vKeyPointRotation.push_back(KeyPoint(point.pt, 15, i*intervalBin,point.response));
 			}
 		}
@@ -155,7 +158,7 @@ void normVector(vector<float>& v) {
 }
 
 void getGaussianWeight(Mat& gaussianWeight, int wSize) {
-	float sigma = getSigma(wSize);
-	Mat k = getGaussianKernel(wSize, sigma, CV_32F);
+	//float sigma = getSigma(wSize);
+	Mat k = getGaussianKernel(wSize, 0, CV_32F);
 	gaussianWeight = k * k.t();
 }

@@ -29,7 +29,7 @@ void findMatch(vector<Descriptor>& keyPointDescriptor1, vector<Descriptor>& keyP
 				secondPoint2 = Point(desp2.x, desp2.y);
 			}
 		}
-		if (bestDist > 0.8) continue;
+		if (bestDist > 2) continue;
 		float ratio = bestDist / secondDist;
 		if (ratio <= 0.8) {
 			keyPoint1.push_back(KeyPoint(bestPoint1, 5));
