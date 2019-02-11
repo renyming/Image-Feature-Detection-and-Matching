@@ -29,7 +29,7 @@ std::vector<KeyPoint> harrisCorner(const Mat& img, int threshold) {
 
 	normalize(c, cNorm, 0, 255, NORM_MINMAX, CV_32F);
 
-	Mat cThreshold = Mat::zeros(2,cNorm.size, CV_32F);
+	Mat cThreshold = Mat::zeros(cNorm.size(), CV_32F);
 	
 	int rows = img.rows;
 	int cols = img.cols;
@@ -67,7 +67,7 @@ void localMaxima(cv::Mat& in) {
 			for (int m = -1; m < 2; ++m) {
 				for (int n = -1; n < 2; ++n) {
 					float current = in.at<float>(i+m, j+n);
-					if (current >= max) {
+					if (current!=0 && current >= max) {
 						max = current;
 						//set previous max to 0
 						if (row != -1) in.at<float>(row, col) = 0.0F;

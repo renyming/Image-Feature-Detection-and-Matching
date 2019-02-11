@@ -19,11 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GenerateDescriptor.cpp" />
     <ClCompile Include="HarrisCorner.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="SSD.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Descriptor.h" />
+    <ClInclude Include="GenerateDescriptor.h" />
     <ClInclude Include="HarrisCorner.h" />
+    <ClInclude Include="SSD.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
