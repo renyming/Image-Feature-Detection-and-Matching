@@ -1,8 +1,9 @@
 #include"HarrisCorner.h"
 
 using namespace cv;
+using namespace std;
 
-std::vector<KeyPoint> harrisCorner(const Mat& img, int threshold) {
+void harrisCorner(const Mat& img, vector<KeyPoint>& corners, int threshold, bool isANMS) {
 	Mat greyImg;
 	cvtColor(img, greyImg, COLOR_BGR2GRAY);
 	//GaussianBlur(greyImg, greyImg, Size(3, 3),1);
@@ -28,58 +29,70 @@ std::vector<KeyPoint> harrisCorner(const Mat& img, int threshold) {
 	c = det/(GIx2+GIy2);
 
 	normalize(c, cNorm, 0, 255, NORM_MINMAX, CV_32F);
+	
+	if (isANMS) {
+		std::vector<KeyPoint> cornersANMS;
+		ANMS(cNorm, cornersANMS, threshold);
+
+		Mat localMax = Mat::zeros(cNorm.size(), CV_32F);
+		for (KeyPoint point : cornersANMS) {
+			localMax.at<float>(point.pt) = point.response;
+		}
+		localMaxima(localMax, corners, 0);
+	}
+	else {
+		localMaxima(cNorm, corners, threshold);
+	}
+
+}
+
+void localMaxima(const cv::Mat& cNorm, std::vector<KeyPoint>& corners, int threshold) {
 
 	Mat cThreshold = Mat::zeros(cNorm.size(), CV_32F);
-	
-	int rows = img.rows;
-	int cols = img.cols;
+
+	int rows = cNorm.rows;
+	int cols = cNorm.cols;
 	for (int i = 0; i < rows; ++i) {
 		for (int j = 0; j < cols; ++j) {
 			float intensity = cNorm.at<float>(i, j);
 			if (intensity >= threshold) {
-				cThreshold.at<float>(i, j)=intensity;
+				cThreshold.at<float>(i, j) = intensity;
 			}
 		}
 	}
 
-	localMaxima(cThreshold);
-	std::vector<KeyPoint> corners;
-	for (int i = 0; i < rows; ++i) {
-		for (int j = 0; j < cols; ++j) {
-			float intensity=cThreshold.at<float>(i, j);
-			if (intensity != 0) {
-				KeyPoint kPoint(Point(j,i), 5,-1.0F,intensity);
-				corners.push_back(kPoint);
-			}
-		}
-	}
-
-	return corners;
-
-}
-
-void localMaxima(cv::Mat& in) {
-	for (int i = 1; i < in.rows - 2; ++i) {
-		for (int j = 1; j < in.cols - 2; ++j) {
+	for (int i = 1; i < cThreshold.rows - 2; ++i) {
+		for (int j = 1; j < cThreshold.cols - 2; ++j) {
 			//loop within 3*3 box
 			float max = 0;
 			int row=-1, col=-1;
 			for (int m = -1; m < 2; ++m) {
 				for (int n = -1; n < 2; ++n) {
-					float current = in.at<float>(i+m, j+n);
+					float current = cThreshold.at<float>(i+m, j+n);
 					if (current!=0 && current >= max) {
 						max = current;
 						//set previous max to 0
-						if (row != -1) in.at<float>(row, col) = 0.0F;
+						if (row != -1) cThreshold.at<float>(row, col) = 0.0F;
 						row = i + m;
 						col = j + n;
 					}
 					else {
-						in.at<float>(i+m,j+n) = 0.0F;
+						cThreshold.at<float>(i+m,j+n) = 0.0F;
 					}
 				}
 			}
 
 		}
 	}
+
+	for (int i = 0; i < rows; ++i) {
+		for (int j = 0; j < cols; ++j) {
+			float intensity = cThreshold.at<float>(i, j);
+			if (intensity != 0) {
+				KeyPoint kPoint(Point(j, i), 5, -1.0F, intensity);
+				corners.push_back(kPoint);
+			}
+		}
+	}
+
 }

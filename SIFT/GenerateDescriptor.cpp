@@ -10,10 +10,10 @@ void generateDescriptor(const Mat& in, const vector<KeyPoint> keyPoint, vector<D
 	vector<KeyPoint> keyPointRotation;
 	kPRotation(grayImg, keyPoint, keyPointRotation);
 
-	Mat out;
-	drawKeypoints(in, keyPointRotation, out, -1, DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-	imshow("", out);
-	waitKey();
+	//Mat out;
+	//drawKeypoints(in, keyPointRotation, out, -1, DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+	//imshow("", out);
+	//waitKey();
 
 	extractDescriptor(grayImg, keyPointRotation, keyPointDescriptor);
 
@@ -25,7 +25,7 @@ void extractDescriptor(const Mat& in, const vector<KeyPoint>& keyPointRotation, 
 	int nBin = 36;
 	int intervalBin = 360 / nBin;
 	Mat gKernel;
-	getGaussianWeight(gKernel, wSize-2);
+	//getGaussianWeight(gKernel, wSize-2);
 	
 	for (KeyPoint point : keyPointRotation) {
 		//discard key points to avoid corner conditions
@@ -42,7 +42,7 @@ void extractDescriptor(const Mat& in, const vector<KeyPoint>& keyPointRotation, 
 				float diffI = window.at<float>(i + 1, j) - window.at<float>(i - 1, j);
 				float diffJ = window.at<float>(i, j + 1) - window.at<float>(i, j - 1);
 				float m = sqrt(pow(diffI, 2.0) + pow(diffJ, 2.0));
-				M.at<float>(i - 1, j - 1) = m;// *gKernel.at<float>(i - 1, j - 1);
+				M.at<float>(i - 1, j - 1) = m; //*gKernel.at<float>(i - 1, j - 1);
 				float theta = atan2(diffI, diffJ) * 180 / M_PI;
 				if (theta < 0) theta += 360;
 
@@ -70,19 +70,16 @@ void extractDescriptor(const Mat& in, const vector<KeyPoint>& keyPointRotation, 
 			}
 		}
 
-		vector<float> binNorm;
-		normalize(bin, binNorm, 1.0, 0.0, NORM_L2);
-
-		for (int i = 0; i < binNorm.size(); ++i) {
-			if (binNorm[i] > 0.2) binNorm[i] = 0.2;
+		//normalize+contrast invariance
+		normVector(bin);
+		for (int i = 0; i < bin.size(); ++i) {
+			if (bin[i] > 0.2) bin[i] = 0.2;
 		}
+		normVector(bin);
 
-		normalize(binNorm, bin, 1.0, 0.0, NORM_L2);
-
-		Mat matBin = Mat(1, 128, CV_32F);
-		for (int i = 0; i < 128; ++i) {
-			matBin.at<float>(i) = bin[i];
-		}
+		Mat matBin = Mat(1,128,CV_32F);
+		//copy vector to mat in one row instead of one col
+		memcpy(matBin.data, bin.data(), bin.size() * sizeof(float));
 
 		keyPointDescriptor.push_back(Descriptor(point.pt.x, point.pt.y, matBin));
 	}

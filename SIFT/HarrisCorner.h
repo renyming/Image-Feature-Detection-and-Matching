@@ -2,6 +2,7 @@
 
 #include<opencv2/opencv.hpp>
 #include<vector>
+#include "ANMS.h"
 
-std::vector<cv::KeyPoint> harrisCorner(const cv::Mat&, int);
-void localMaxima(cv::Mat&);
+void harrisCorner(const cv::Mat&, std::vector<cv::KeyPoint>&, int, bool);
+void localMaxima(const cv::Mat& cNorm, std::vector<cv::KeyPoint>& corners, int threshold);

@@ -19,12 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ANMS.cpp" />
     <ClCompile Include="GenerateDescriptor.cpp" />
     <ClCompile Include="HarrisCorner.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="SSD.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ANMS.h" />
     <ClInclude Include="Descriptor.h" />
     <ClInclude Include="GenerateDescriptor.h" />
     <ClInclude Include="HarrisCorner.h" />
