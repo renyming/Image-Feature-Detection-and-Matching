@@ -11,4 +11,5 @@ Other features:
 1. Rotation invariance 
 2. Contrast invariance
 
-![Matching Result](https://raw.githubusercontent.com/renyming/Image-Feature-Detection-and-Matching/master/screenshot.png)
+**Matching Result**
+![Matching Result](https://github.com/renyming/Image-Feature-Detection-and-Matching/blob/master/screenshot.png)
