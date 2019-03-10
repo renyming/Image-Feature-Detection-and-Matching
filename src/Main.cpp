@@ -48,4 +48,6 @@ int main(int argc, char* argv[]) {
 	drawMatches(origImage1, keyPoint1, origImage2, keyPoint2, dMatch,out);
 	imshow("Match", out);
 	waitKey();
+	imwrite("screenshot.png", out);
+
 }
