@@ -1,6 +1,6 @@
 # Image Feature Detection and Matching
 
-Implemented Harris detector, SIFT descriptor and matching, also ANMS.
+Implemented Harris detector, SIFT descriptor and matching with ratio test, also ANMS.
 
 **Usage:** 
 ```
