@@ -1,4 +1,4 @@
-# SIFT
+# Image Feature Detection and Matching
 
 Implemented Harris detector, SIFT descriptor and matching, also ANMS.
 
